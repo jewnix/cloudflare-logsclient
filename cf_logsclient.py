@@ -27,6 +27,7 @@ def get_params():
     params['zoneTag'] = config.get("Config", "zone-tag")
     params['startTime'] = config.get("Config", "start-time")
     params['endTime'] = config.get("Config", "end-time")
+    params['fields'] = config.get("Config", "fields")
     if len(str(params["startTime"])) == 0:
         params['startTime'] = str(now - 900)
         params['startTime'] = params['startTime'][:-1] + '0'
@@ -36,8 +37,8 @@ def get_params():
 
 def make_request():
     headers = {"x-Auth-Key": params['authKey'], "x-Auth-Email": params['authEmail']}
-    url = "https://api.cloudflare.com/client/v4/zones/" + params['zoneTag'] + "/logs/requests?" \
-          + "start=" + params['startTime'] + "&end=" + params['endTime']
+    url = "https://api.cloudflare.com/client/v4/zones/" + params['zoneTag'] + "/logs/received?" \
+          + "start=" + params['startTime'] + "&end=" + params['endTime'] + "&fields=" + params['fields']
     req = requests.get(url, headers=headers)
     return req
 
