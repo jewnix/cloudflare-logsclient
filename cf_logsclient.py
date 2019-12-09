@@ -9,7 +9,7 @@ from os.path import expanduser
 config = ConfigParser.SafeConfigParser()
 params = {}
 now = int(round(time.time()))
-log_dir = expanduser('~/cloudflare_logs/')
+log_dir = expanduser('/var/log/cloudflare_logs/')
 local_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 config_file = os.path.join(local_dir, "config.properties")
 
