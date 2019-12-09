@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import requests
 import ConfigParser
 import time
@@ -10,7 +10,9 @@ config = ConfigParser.SafeConfigParser()
 params = {}
 now = int(round(time.time()))
 log_dir = expanduser('~/cloudflare_logs/')
-config_file = './config.properties'
+local_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+config_file = os.path.join(local_dir, "config.properties")
+
 
 def load_config():
     if not os.path.isdir(log_dir):
@@ -44,7 +46,7 @@ def make_request():
 
 def print_stats():
     req = make_request()
-    output_file = open(log_dir + 'output.txt','a')
+    output_file = open(log_dir + 'cloudflare.log','a')
     output_file.write(req.content)
     output_file.close()
 
