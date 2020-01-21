@@ -12,12 +12,13 @@ now = int(round(time.time()))
 log_dir = expanduser('/var/log/cloudflare_logs/')
 local_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 config_file = os.path.join(local_dir, "config.properties")
-
+config.read(config_file)
+zones = config.items("Zones")
+timenow = time.strftime("%m%d%Y-%H")
 
 def load_config():
     if not os.path.isdir(log_dir):
         os.makedirs(log_dir)
-
     if os.path.exists(config_file):
         config.readfp(open(config_file))
     else:
@@ -26,7 +27,6 @@ def load_config():
 def get_params():
     params['authEmail'] = config.get("Config", "auth-email")
     params['authKey'] = config.get("Config", "auth-key")
-    params['zoneTag'] = config.get("Config", "zone-tag")
     params['startTime'] = config.get("Config", "start-time")
     params['endTime'] = config.get("Config", "end-time")
     params['fields'] = config.get("Config", "fields")
@@ -39,14 +39,15 @@ def get_params():
 
 def make_request():
     headers = {"x-Auth-Key": params['authKey'], "x-Auth-Email": params['authEmail']}
-    url = "https://api.cloudflare.com/client/v4/zones/" + params['zoneTag'] + "/logs/received?" \
-          + "start=" + params['startTime'] + "&end=" + params['endTime'] + "&fields=" + params['fields']
-    req = requests.get(url, headers=headers)
+    for zone in zones:
+        url = "https://api.cloudflare.com/client/v4/zones/" + zone[1] + "/logs/received?" \
+            + "start=" + params['startTime'] + "&end=" + params['endTime'] + "&fields=" + params['fields']
+        req = requests.get(url, headers=headers)
     return req
 
 def print_stats():
     req = make_request()
-    output_file = open(log_dir + 'cloudflare.log','a')
+    output_file = open(log_dir + 'cloudflare.log-' + timenow ,'a')
     output_file.write(req.content)
     output_file.close()
 
